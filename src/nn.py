@@ -17,7 +17,9 @@ import opt.ga.StandardGeneticAlgorithm as StandardGeneticAlgorithm
 
 
 def initialize_instances(input_file):
-    """Read the abalone.txt CSV data into a list of instances."""
+    """Read a dataset into a list of instances.
+
+    """
     instances = []
 
     # Read in the abalone.txt CSV file
@@ -125,11 +127,11 @@ if __name__ == "__main__":
     filename = 'seismic_bumps.csv'
     input_file = get_abspath(filename, filepath)
 
-    INPUT_LAYER = 22  # number of features
-    HIDDEN_LAYER = 15  # hidden layer nodes
-    OUTPUT_LAYER = 1  # output layer is always 1 for binomial classification
-    TRAINING_ITERATIONS = 1000
+    input_layer = 22  # number of features
+    hidden_layer = 15  # hidden layer nodes
+    output_layer = 1  # output layer is always 1 for binomial classification
+    training_iterations = 1000
 
-    instances=initialize_instances(input_file)
+    instances = initialize_instances(input_file)
     print instances[0]
     # main()
