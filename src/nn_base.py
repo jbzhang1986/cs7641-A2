@@ -1,5 +1,8 @@
 """
-Implementation of randomized hill climbing, simulated annealing, and genetic algorithm to find optimal weights to a neural network that is classifying the seismic-bumps dataset.
+Implementation of randomized hill climbing, simulated annealing, and genetic
+algorithm to find optimal weights for a neural network that is classifying
+the seismic-bumps dataset.
+
 """
 import os
 import csv
@@ -17,18 +20,23 @@ import opt.ga.StandardGeneticAlgorithm as StandardGeneticAlgorithm
 
 
 def initialize_instances(input_file):
-    """Read a dataset into a list of instances.
+    """Read a dataset into a list of instances compatible the ABAGAIL NN.
+    Assumes that the class labels are 0 or 1.
+
+    Args:
+        input_file (str): Input file with classes and attributes.
+    Returns:
+        instances (list): List of instances (attribute/class value pairs)
 
     """
     instances = []
 
-    # Read in the abalone.txt CSV file
-    with open(input_file, "r") as seismic:
-        reader = csv.reader(seismic)
-
+    # read in the input file
+    with open(input_file, "r") as dataset:
+        reader = csv.reader(dataset)
         for row in reader:
             instance = Instance([float(value) for value in row[:-1]])
-            instance.setLabel(Instance(0 if float(row[-1]) < 15 else 1))
+            instance.setLabel(Instance(0 if float(row[-1]) <= 0 else 1))
             instances.append(instance)
 
     return instances
@@ -36,13 +44,16 @@ def initialize_instances(input_file):
 
 def train(oa, network, oaName, instances, measure, iterations):
     """Train a given network on a set of instances.
-    :param OptimizationAlgorithm oa:
-    :param BackPropagationNetwork network:
-    :param str oaName:
-    :param list[Instance] instances:
-    :param AbstractErrorMeasure measure:
+
+    Args:
+        oa (OptimizationAlgorithm): Optimization algorithm object.
+        network (BackPropagationNetwork): NN object.
+        oaName (str): Name of optimization algorithm.
+        instances (list): List of training instances.
+        measure (AbstractErrorMeasure): Error function to optimize.
+
     """
-    print "\nError results for %s\n---------------------------" % (oaName,)
+    print '\nError results for %s\n---------------------------' % (oaName,)
 
     for iteration in xrange(iterations):
         oa.train()
@@ -122,16 +133,16 @@ def train(oa, network, oaName, instances, measure, iterations):
 #     print results
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     filepath = 'data/experiments'
     filename = 'seismic_bumps.csv'
     input_file = get_abspath(filename, filepath)
 
     input_layer = 22  # number of features
-    hidden_layer = 15  # hidden layer nodes
+    hidden_layer = 5  # hidden layer nodes
     output_layer = 1  # output layer is always 1 for binomial classification
-    training_iterations = 1000
+    training_iterations = 100
 
     instances = initialize_instances(input_file)
-    print instances[0]
+    print len(instances)
     # main()
