@@ -29,7 +29,7 @@ ENV JYTHON_HOME=/usr/local/jython-${JYTHON_VERSION}
 ENV PATH="${PATH}:${JYTHON_HOME}/bin"
 
 # install Ant
-ENV ANT_VERSION=1.10.1
+ENV ANT_VERSION=1.10.2
 RUN wget -q http://www.us.apache.org/dist//ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz && \
     tar -xzf apache-ant-${ANT_VERSION}-bin.tar.gz && \
     mv apache-ant-${ANT_VERSION} /opt/ant && \
@@ -40,7 +40,7 @@ ENV PATH="${PATH}:/opt/ant/bin"
 
 # clone ABAGAIL repo, build jar using Ant, add to Java CLASSPATH and install additional Jython packages
 RUN cd /home \
-    && git clone https://github.com/pushkar/ABAGAIL.git \
+    && git clone https://github.com/wollerman/ABAGAIL.git \
     && cd /home/ABAGAIL && ant \
     && echo 'export CLASSPATH=.:/home/ABAGAIL/ABAGAIL.jar' >> ~/.bashrc \
     && jython -m easy_install click

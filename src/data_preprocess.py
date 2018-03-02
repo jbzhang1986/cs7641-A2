@@ -51,9 +51,10 @@ def get_splits(X, y, filepath='data/experiments'):
 
     # save datasets to CSV
     output_path = 'data/experiments'
-    save_dataset(train, 'seismic_train.csv', subdir=output_path)
-    save_dataset(test, 'seismic_test.csv', subdir=output_path)
-    save_dataset(validation, 'seismic_validation.csv', subdir=output_path)
+    save_dataset(train, 'seismic_train.csv', subdir=output_path, header=False)
+    save_dataset(test, 'seismic_test.csv', subdir=output_path, header=False)
+    save_dataset(validation, 'seismic_validation.csv',
+                 subdir=output_path, header=False)
 
 
 def preprocess_seismic():
