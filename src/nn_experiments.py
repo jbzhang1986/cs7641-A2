@@ -17,7 +17,7 @@ import click
 @click.option('--ga_p', default=50, help='Population size (GA only).')
 @click.option('--ga_ma', default=10, help='# population to mate (GA only).')
 @click.option('--ga_mu', default=10, help='# population to mutate (GA only).')
-def run(oa, iterations, sa_t, sa_c):
+def run(oa, iterations, sa_t, sa_c, ga_p, ga_ma, ga_mu):
     """Run neural network experiment
 
     """

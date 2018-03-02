@@ -18,7 +18,7 @@ runlocal:
 	sudo docker run -t -d --name $(image_name) -v ~/Projects:/home/Projects:z $(full_image_tag) /bin/bash
 
 runbash:
-	docker exec -it $(image_name) /bin/bash
+	docker exec -it $(image_name) /bin/bash -c "export COLUMNS=`tput cols`; export LINES=`tput lines`; exec bash"
 
 .PHONY: buildlocal build runlocal
 
