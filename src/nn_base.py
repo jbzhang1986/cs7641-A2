@@ -39,9 +39,10 @@ class NNExperiment(object):
 
     """
 
-    def __init__(self, iLayer, hLayer, oLayer, iterations, oaName, SA_T=1E10, SA_C=0.10, GA_P=50, GA_MA=10, GA_MU=10):
+    def __init__(self, iLayer, hLayer_one, hLayer_two, oLayer, iterations, oaName, SA_T=1E10, SA_C=0.10, GA_P=50, GA_MA=10, GA_MU=10):
         self.input_layer = iLayer
-        self.hidden_layer = hLayer
+        self.hidden_layer_one = hLayer_one
+        self.hidden_layer_two = hLayer_two
         self.output_layer = oLayer
         self.iterations = iterations
         self.oaName = oaName
@@ -133,32 +134,38 @@ class NNExperiment(object):
 
         """
         factory = BackPropagationNetworkFactory()  # instantiate main NN class
-        params = [self.input_layer, self.hidden_layer, self.output_layer]
+        params = [self.input_layer, self.hidden_layer_one, self.hidden_layer_two, self.output_layer]
         self.network = factory.createClassificationNetwork(params)
         dataset = DataSet(train)  # setup training instances dataset
+        nnop = NeuralNetworkOptimizationProblem(
+            dataset, self.network, self.measure)
+        oa = None
 
         # get output file name
         outpath = 'results/NN'
-        filename = '{}_results.csv'.format(self.oaName)
-        filepath = get_abspath(filename, outpath)
-        oa = None
-        nnop = NeuralNetworkOptimizationProblem(
-            dataset, self.network, self.measure)
+        filename = None
 
         # options for different optimization algorithms
         if self.oaName == 'BP':
+            filename = '{}/results.csv'.format(self.oaName)
             rule = RPROPUpdateRule()
             oa = BatchBackPropagationTrainer(
                 dataset, self.network, self.measure, rule)
         elif self.oaName == 'RHC':
+            filename = '{}/results.csv'.format(self.oaName)
             oa = RandomizedHillClimbing(nnop)
         elif self.oaName == 'SA':
+            filename = '{}/results_{}_{}.csv'.format(
+                self.oaName, self.SA_T, self.SA_C)
             oa = SimulatedAnnealing(self.SA_T, self.SA_C, nnop)
         elif self.oaName == 'GA':
+            filename = '{}/results_{}_{}_{}.csv'.format(
+                self.oaName, self.GA_P, self.GA_MA, self.GA_MU)
             oa = StandardGeneticAlgorithm(
                 self.GA_P, self.GA_MA, self.GA_MU, nnop)
 
         # train network
+        filepath = get_abspath(filename, outpath)
         self.train(oa, train, test, validation, filepath)
 
 

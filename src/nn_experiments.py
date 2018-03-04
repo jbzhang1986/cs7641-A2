@@ -34,12 +34,19 @@ def run(oa, iterations, sa_t, sa_c, ga_p, ga_ma, ga_mu):
 
     # set NN parameters
     input_layer = 21  # number of features
-    hidden_layer = 15  # hidden layer nodes
+    hidden_layer_one = 250  # hidden layer one nodes
+    hidden_layer_two = 250  # hidden layer two nodes
     output_layer = 1  # output layer is always 1 for binomial classification
 
     # define optimization algorithm
     respath = 'results/NN'
-    resfile = get_abspath('{}_results.csv'.format(oa), respath)
+    resfile = None
+    if oa in ('BP', 'RHC'):
+        resfile = get_abspath('{}/results.csv'.format(oa), respath)
+    elif oa == 'SA':
+        resfile = get_abspath('{}/results_{}_{}.csv'.format(oa, sa_t, sa_c), respath)
+    elif oa == 'GA':
+        resfile = get_abspath('{}/results_{}_{}_{}.csv'.format(oa, ga_p, ga_ma, ga_mu), respath)
 
     # remove existing results file, if it exists
     try:
@@ -60,7 +67,8 @@ def run(oa, iterations, sa_t, sa_c, ga_p, ga_ma, ga_mu):
 
     # initialize experiment
     NN = NNExperiment(input_layer
-                     ,hidden_layer
+                     ,hidden_layer_one
+                     ,hidden_layer_two
                      ,output_layer
                      ,iterations
                      ,oa
