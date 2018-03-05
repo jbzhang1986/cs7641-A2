@@ -3,12 +3,14 @@ Code to generate plots related to neural network weight optimization
 experiments.
 
 """
-import numpy as np
-import pandas as pd
+from helpers import get_abspath
 import matplotlib
 matplotlib.use('agg')
+import numpy as np
+import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
-from helpers import get_abspath
+
 
 def combine_datasets(datafiles):
     """Creates combined datasets for error and accuracy to compare the various
@@ -21,12 +23,31 @@ def combine_datasets(datafiles):
     # create combined error datasets
 
 
+def combined_error(df, ef='Mean squared error'):
+    """Generates plots for comparing error across the various optimization
+    algorithms.
 
-def combined_error(df, ef=)
-def combined_acc(df, ef)
+    Args:
+        df (Pandas.DataFrame): Dataset.
+        ef (str): Name of loss function.
+
+    """
+    print('hello')
 
 
-def error_curve(df, oaName, ef='Mean squared error'):
+def combined_acc(df, ef='Mean squared error'):
+    """Generates plots for comparing accuracy scores across the various
+    optimization algorithms.
+
+    Args:
+        df (Pandas.DataFrame): Dataset.
+        ef (str): Name of loss function.
+
+    """
+    print('hello')
+
+
+def error_curve(df, oaName, title, ef='Mean squared error'):
     """Plots the error curve for a given optimization algorithm on the
     seismic-bumps dataset and saves it as a PNG file.
 
@@ -36,11 +57,12 @@ def error_curve(df, oaName, ef='Mean squared error'):
         ef (str): Name of loss function.
 
     """
+
     # get columns
     iterations = df['iteration']
     MSE_train = df['MSE_train']
     MSE_test = df['MSE_test']
-    MSE_valid =df['MSE_validation']
+    MSE_valid = df['MSE_validation']
 
     # create error curve
     plt.figure(0)
@@ -49,6 +71,7 @@ def error_curve(df, oaName, ef='Mean squared error'):
     plt.plot(iterations, MSE_valid, color='g', label='Test')
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
+    plt.title('{} - {}'.format(title, ef))
     plt.xlabel('Iterations')
     plt.ylabel(ef)
 
@@ -61,6 +84,17 @@ def error_curve(df, oaName, ef='Mean squared error'):
 
 
 if __name__ == '__main__':
-    # generate individual algorithm plots
+    # get datasets for error and accuracy curves
+    resdir = 'results/NN'
+    BP = pd.read_csv(get_abspath('BP/results.csv', resdir))
+    RHC = pd.read_csv(get_abspath('RHC/results.csv', resdir))
+    SA = pd.read_csv(get_abspath('SA/results_10000000000.0_0.15.csv', resdir))
+    GA = pd.read_csv(get_abspath('GA/results_100_10_10.csv', resdir))
+
+    # generate individual algorithm error and accuracy curves
+    error_curve(BP, oaName='BP', title='Backpropagation')
+    error_curve(RHC, oaName='RHC', title='Randomized Hill Climbing')
+    error_curve(SA, oaName='SA', title='Simulated Annealing')
+    error_curve(GA, oaName='GA', title='Genetic Algorithms')
 
     # generate combined plots
