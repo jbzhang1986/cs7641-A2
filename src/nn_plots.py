@@ -308,7 +308,6 @@ def sa_complexity_curve():
     df_75 = pd.read_csv(get_abspath('results_10000000000.0_0.75.csv', resdir))
     df_90 = pd.read_csv(get_abspath('results_10000000000.0_0.9.csv', resdir))
 
-
     # get columns
     iters = df_15['iteration']
     train_15 = df_15['MSE_train']
