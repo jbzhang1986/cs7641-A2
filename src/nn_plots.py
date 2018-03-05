@@ -3,40 +3,43 @@ Code to generate plots related to neural network weight optimization
 experiments.
 
 """
-from helpers import get_abspath
+from helpers import get_abspath, save_dataset
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('agg')
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def combine_datasets(datafiles):
+def combine_datasets(df):
     """Creates combined datasets for error and accuracy to compare the various
     optimization algorithms.
 
     Args:
-        datafiles (dict(str)): Dictionary of filepaths to be used.
+        dfs (dict(Pandas.DataFrame)): Dictionary of data frames.
 
     """
     # create combined error datasets
-    resdir = 'results/NN'
-    BP = datafiles['BP']
-    RHC =datafiles['RHC']
+    BP = df['BP']
+    RHC = datafiles['RHC']
     SA = datafiles['SA']
     GA = datafiles['GA']
 
     # rename columns
-    bpCols = {'MSE_train': 'bp_msetrain', 'MSE_test': 'bp_msetest', 'MSE_validation':'bp_msevalid', 'acc_train': 'bp_acctrain','acc_test':'bp_acctest', 'acc_validation':'bp_accvalid', 'seconds_elapsed': 'bp_time'}
-    rhcCols = {'MSE_train': 'rhc_msetrain', 'MSE_test': 'rhc_msetest', 'MSE_validation':'rhc_msevalid', 'acc_train': 'rhc_acctrain','acc_test':'rhc_acctest', 'acc_validation':'rhc_accvalid', 'seconds_elapsed': 'rhc_time'}
-    saCols = {'MSE_train': 'sa_msetrain', 'MSE_test': 'sa_msetest', 'MSE_validation':'sa_msevalid', 'acc_train': 'sa_acctrain','acc_test':'sa_acctest', 'acc_validation':'sa_accvalid', 'seconds_elapsed': 'sa_time'}
-    gaCols = {'MSE_train': 'ga_msetrain', 'MSE_test': 'ga_msetest', 'MSE_validation':'ga_msevalid', 'acc_train': 'ga_acctrain','acc_test':'ga_acctest', 'acc_validation':'ga_accvalid', 'seconds_elapsed': 'ga_time'}
+    bCols = {'MSE_train': 'bp_msetrain', 'MSE_test': 'bp_msetest', 'MSE_validation': 'bp_msevalid', 'acc_train': 'bp_acctrain', 'acc_test': 'bp_acctest', 'acc_validation': 'bp_accvalid', 'seconds_elapsed': 'bp_time'}
+    rCols = {'MSE_train': 'rhc_msetrain', 'MSE_test': 'rhc_msetest', 'MSE_validation': 'rhc_msevalid', 'acc_train': 'rhc_acctrain', 'acc_test': 'rhc_acctest', 'acc_validation': 'rhc_accvalid', 'seconds_elapsed': 'rhc_time'}
+    sCols = {'MSE_train': 'sa_msetrain', 'MSE_test': 'sa_msetest', 'MSE_validation': 'sa_msevalid', 'acc_train': 'sa_acctrain', 'acc_test': 'sa_acctest', 'acc_validation': 'sa_accvalid', 'seconds_elapsed': 'sa_time'}
+    gCols = {'MSE_train': 'ga_msetrain', 'MSE_test': 'ga_msetest', 'MSE_validation': 'ga_msevalid', 'acc_train': 'ga_acctrain', 'acc_test': 'ga_acctest', 'acc_validation': 'ga_accvalid', 'seconds_elapsed': 'ga_time'}
 
-    BP.rename(index=str, columns=bpCols, inplace=True)
-    RHC.rename(index=str, columns=rhcCols, inplace=True)
-    SA.rename(index=str, columns=saCols, inplace=True)
-    GA.rename(index=str, columns=gaCols, inplace=True)
+    BP = df['BP'].rename(index=str, columns=bCols)
+    RHC = df['RHC'].drop(columns='iteration').rename(index=str, columns=rCols)
+    SA = df['SA'].drop(columns='iteration').rename(index=str, columns=sCols)
+    GA = df['GA'].drop(columns='iteration').rename(index=str, columns=gCols)
 
-    # create combined validation datasets ()
+    # create combined datasets
+    res = pd.concat([BP, RHC, SA, GA], axis=1)
+    save_dataset(res, filename='combined.csv', subdir='results/NN/combined')
 
 
 def combined_error(df, ef='Mean squared error'):
@@ -143,11 +146,13 @@ if __name__ == '__main__':
     SA = pd.read_csv(get_abspath('SA/results_10000000000.0_0.15.csv', resdir))
     GA = pd.read_csv(get_abspath('GA/results_100_10_10.csv', resdir))
 
-    # generate individual algorithm error and accuracy curves
+    # generate error curves
     error_curve(BP, oaName='BP', title='Backpropagation')
     error_curve(RHC, oaName='RHC', title='Randomized Hill Climbing')
     error_curve(SA, oaName='SA', title='Simulated Annealing')
     error_curve(GA, oaName='GA', title='Genetic Algorithms')
+
+    # generate validation curves
     validation_curve(BP, oaName='BP', title='Backpropagation')
     validation_curve(RHC, oaName='RHC', title='Randomized Hill Climbing')
     validation_curve(SA, oaName='SA', title='Simulated Annealing')
