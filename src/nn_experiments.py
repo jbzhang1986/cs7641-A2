@@ -1,6 +1,5 @@
 """
-Neural network weight optimization experiments. Algorithms used include
-backpropagation (control variable), randomized hill climbing,
+Run neural network experiments using command line utility.
 
 """
 import os
