@@ -5,6 +5,7 @@ experiments.
 """
 from helpers import get_abspath, save_dataset
 import pandas as pd
+import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import seaborn as sns
@@ -178,7 +179,7 @@ def combined_acc(df):
     plt.clf()
 
 
-def combined_timing(df):
+def combined_time(df):
     """Generates a plot for comparing elapsed time across the various
     optimization algorithms and saves it as a PNG file.
 
@@ -188,10 +189,10 @@ def combined_timing(df):
     """
     # get columns
     iters = df['iteration']
-    bp_time = df['bp_time'] / 60
-    rhc_time = df['rhc_time'] / 60
-    sa_time = df['sa_time'] / 60
-    ga_time = df['ga_time'] / 60
+    bp_time = np.log(df['bp_time'])
+    rhc_time = np.log(df['rhc_time'])
+    sa_time = np.log(df['sa_time'])
+    ga_time = np.log(df['ga_time'])
 
     # create timing curve for train dataset
     plt.figure(0)
@@ -208,11 +209,11 @@ def combined_timing(df):
     plt.grid(linestyle='dotted')
     plt.title('Algorithm Comparison - Elapsed Time')
     plt.xlabel('Iterations')
-    plt.ylabel('Time (minutes)')
+    plt.ylabel('Log time')
 
     # save timing curve plot as PNG
     plotdir = 'plots/NN/combined'
-    plotpath = get_abspath('elapsed_time.png', plotdir)
+    plotpath = get_abspath('timing_curve.png', plotdir)
     plt.savefig(plotpath, bbox_inches='tight')
     plt.clf()
 
@@ -240,6 +241,7 @@ def error_curve(df, oaName, title):
     plt.plot(iterations, MSE_train, color='b', label='Training')
     plt.plot(iterations, MSE_test, color='r', label='Test')
     plt.plot(iterations, MSE_valid, color='g', label='Validation')
+    plt.xlim(xmin=-30)
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
     plt.title('{} - Mean squared error'.format(title))
@@ -276,6 +278,7 @@ def learning_curve(df, oaName, title):
     plt.plot(iterations, acc_train, color='b', label='Training')
     plt.plot(iterations, acc_test, color='r', label='Test')
     plt.plot(iterations, acc_valid, color='g', label='Validation')
+    plt.xlim(xmin=-30)
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
     plt.title('{} - Learning Curve'.format(title))
@@ -285,19 +288,14 @@ def learning_curve(df, oaName, title):
     # save learning curve plot as PNG
     plotdir = 'plots/NN'
     plot_tgt = '{}/{}'.format(plotdir, oaName)
-    plotpath = get_abspath('{}_VC.png'.format(oaName), plot_tgt)
+    plotpath = get_abspath('{}_LC.png'.format(oaName), plot_tgt)
     plt.savefig(plotpath, bbox_inches='tight')
     plt.clf()
 
 
-def sa_complexity_curve():
-    """Plots the cooling rate complexity curve for the simulated annealing
+def sa_validation_curve():
+    """Plots the cooling rate validation curve for the simulated annealing
     algorithm and saves it as a PNG file.
-
-    Args:
-        df (Pandas.DataFrame): Dataset.
-        oaName (str): Name of optimization algorithm.
-        title (str): Plot title.
 
     """
     # load datasets
@@ -324,43 +322,105 @@ def sa_complexity_curve():
     train_90 = df_90['MSE_train']
     test_90 = df_90['MSE_test']
 
-    # create complexity curve for training data
+    # create validation curve for training data
     plt.figure(0)
-    plt.plot(iters, train_15, color='b', label='CR - 0.15')
-    plt.plot(iters, train_30, color='g', label='CR - 0.30')
-    plt.plot(iters, train_45, color='r', label='CR - 0.45')
-    plt.plot(iters, train_60, color='c', label='CR - 0.60')
-    plt.plot(iters, train_75, color='k', label='CR - 0.75')
-    plt.plot(iters, train_90, color='m', label='CR - 0.90')
+    plt.plot(iters, train_15, color='b', label='CR: 0.15')
+    plt.plot(iters, train_30, color='g', label='CR: 0.30')
+    plt.plot(iters, train_45, color='r', label='CR: 0.45')
+    plt.plot(iters, train_60, color='c', label='CR: 0.60')
+    plt.plot(iters, train_75, color='k', label='CR: 0.75')
+    plt.plot(iters, train_90, color='m', label='CR: 0.90')
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
     plt.title('SA Validation Curve - Cooling Rate (train)')
     plt.xlabel('Iterations')
     plt.ylabel('Mean squared error')
 
-    # save complexity curve plot as PNG
+    # save train validation curve plot as PNG
     plotdir = 'plots/NN/SA'
     plotpath = get_abspath('SA_CR_train.png', plotdir)
     plt.savefig(plotpath, bbox_inches='tight')
     plt.clf()
 
-    # create complexity curve for test data
+    # create validation curve for test data
     plt.figure(0)
-    plt.plot(iters, test_15, color='b', label='CR - 0.15')
-    plt.plot(iters, test_30, color='g', label='CR - 0.30')
-    plt.plot(iters, test_45, color='r', label='CR - 0.45')
-    plt.plot(iters, test_60, color='c', label='CR - 0.60')
-    plt.plot(iters, test_75, color='k', label='CR - 0.75')
-    plt.plot(iters, test_90, color='m', label='CR - 0.90')
+    plt.plot(iters, test_15, color='b', label='CR: 0.15')
+    plt.plot(iters, test_30, color='g', label='CR: 0.30')
+    plt.plot(iters, test_45, color='r', label='CR: 0.45')
+    plt.plot(iters, test_60, color='c', label='CR: 0.60')
+    plt.plot(iters, test_75, color='k', label='CR: 0.75')
+    plt.plot(iters, test_90, color='m', label='CR: 0.90')
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
     plt.title('SA Validation Curve - Cooling Rate (test)')
     plt.xlabel('Iterations')
     plt.ylabel('Mean squared error')
 
-    # save learning curve plot as PNG
+    # save test validation curve plot as PNG
     plotdir = 'plots/NN/SA'
     plotpath = get_abspath('SA_CR_test.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+
+def ga_population_curve():
+    """Plots the population size validation curve for genetic algorithms and
+    saves it as a PNG file.
+
+    """
+    # load datasets
+    resdir = 'results/NN/GA'
+    df_50 = pd.read_csv(get_abspath('results_50_10_10.csv', resdir))
+    df_100 = pd.read_csv(get_abspath('results_100_10_10.csv', resdir))
+    df_150 = pd.read_csv(get_abspath('results_150_10_10.csv', resdir))
+    df_200 = pd.read_csv(get_abspath('results_200_10_10.csv', resdir))
+
+    # get columns
+    iters = df_50['iteration']
+    train_50 = df_50['MSE_train']
+    test_50 = df_50['MSE_test']
+    train_100 = df_100['MSE_train']
+    test_100 = df_100['MSE_test']
+    train_150 = df_150['MSE_train']
+    test_150 = df_150['MSE_test']
+    train_200 = df_200['MSE_train']
+    test_200 = df_200['MSE_test']
+
+    # create validation curve for training data
+    plt.figure(0)
+    plt.plot(iters, train_50, color='b', label='Population: 50')
+    plt.plot(iters, train_100, color='g', label='Population: 100')
+    plt.plot(iters, train_150, color='r', label='Population: 150')
+    plt.plot(iters, train_200, color='r', label='Population: 200')
+    plt.xlim(xmin=-30)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('GA Validation Curve - Population Size (train)')
+    plt.xlabel('Iterations')
+    plt.ylabel('Mean squared error')
+
+    # save complexity curve plot as PNG
+    plotdir = 'plots/NN/GA'
+    plotpath = get_abspath('GA_P_train.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+    # create complexity curve for test data
+    plt.figure(0)
+    plt.plot(iters, test_50, color='b', label='Population: 50')
+    plt.plot(iters, test_100, color='g', label='Population: 100')
+    plt.plot(iters, test_150, color='r', label='Population: 150')
+    plt.plot(iters, test_200, color='r', label='Population: 200')
+    plt.xlim(xmin=-30)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('GA Validation Curve - Population Size (test)')
+    plt.xlabel('Iterations')
+    plt.ylabel('Mean squared error')
+
+    # save learning curve plot as PNG
+    plotdir = 'plots/NN/GA'
+    plotpath = get_abspath('GA_P_test.png', plotdir)
     plt.savefig(plotpath, bbox_inches='tight')
     plt.clf()
 
@@ -385,6 +445,10 @@ if __name__ == '__main__':
     learning_curve(SA, oaName='SA', title='Simulated Annealing')
     learning_curve(GA, oaName='GA', title='Genetic Algorithms')
 
+    # generate validation curves
+    sa_validation_curve()
+    ga_population_curve()
+
     # generate combined dataset
     datafiles = {'BP': BP, 'RHC': RHC, 'SA': SA, 'GA': GA}
     combine_datasets(datafiles)
@@ -393,5 +457,4 @@ if __name__ == '__main__':
     combined = pd.read_csv(get_abspath('combined/combined.csv', resdir))
     combined_error(combined)
     combined_acc(combined)
-    combined_timing(combined)
-    sa_complexity_curve()
+    combined_time(combined)
