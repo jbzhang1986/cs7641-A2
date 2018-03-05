@@ -9,7 +9,8 @@ import matplotlib
 matplotlib.use('agg')
 import seaborn as sns
 import matplotlib.pyplot as plt
-sns.set_context(rc={'lines.markeredgewidth': 1.0})
+sns.set_context('notebook', rc={'lines.markeredgewidth': 1.0})
+sns.set_style("darkgrid")
 
 
 def combine_datasets(df):
@@ -143,7 +144,7 @@ def combined_acc(df):
     plt.ylim(ymax=1.025)
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
-    plt.title('Algorithm Comparison (training data) - Accuracy')
+    plt.title('Algorithm Comparison - Learning Curve (train)')
     plt.xlabel('Iterations')
     plt.ylabel('Accuracy')
 
@@ -166,7 +167,7 @@ def combined_acc(df):
     plt.ylim(ymax=1.025)
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
-    plt.title('Algorithm Comparison (test data) - Accuracy')
+    plt.title('Algorithm Comparison - Learning Curve (test)')
     plt.xlabel('Iterations')
     plt.ylabel('Accuracy')
 
@@ -253,8 +254,8 @@ def error_curve(df, oaName, title):
     plt.clf()
 
 
-def validation_curve(df, oaName, title):
-    """Plots the validation curve for a given optimization algorithm on the
+def learning_curve(df, oaName, title):
+    """Plots the learning curve for a given optimization algorithm on the
     seismic-bumps dataset and saves it as a PNG file.
 
     Args:
@@ -270,14 +271,14 @@ def validation_curve(df, oaName, title):
     acc_test = df['acc_test']
     acc_valid = df['acc_validation']
 
-    # create validation curve
+    # create learning curve
     plt.figure(0)
     plt.plot(iterations, acc_train, color='b', label='Training')
     plt.plot(iterations, acc_test, color='r', label='Test')
     plt.plot(iterations, acc_valid, color='g', label='Validation')
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
-    plt.title('{} - Validation Curve'.format(title))
+    plt.title('{} - Learning Curve'.format(title))
     plt.xlabel('Iterations')
     plt.ylabel('Accuracy')
 
@@ -333,7 +334,7 @@ def sa_complexity_curve():
     plt.plot(iters, train_90, color='m', label='CR - 0.90')
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
-    plt.title('SA (training data) - Complexity Curve (Cooling rate)')
+    plt.title('SA Validation Curve - Cooling Rate (train)')
     plt.xlabel('Iterations')
     plt.ylabel('Mean squared error')
 
@@ -353,7 +354,7 @@ def sa_complexity_curve():
     plt.plot(iters, test_90, color='m', label='CR - 0.90')
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
-    plt.title('SA (test data) - Complexity Curve (Cooling rate)')
+    plt.title('SA Validation Curve - Cooling Rate (test)')
     plt.xlabel('Iterations')
     plt.ylabel('Mean squared error')
 
@@ -379,10 +380,10 @@ if __name__ == '__main__':
     error_curve(GA, oaName='GA', title='Genetic Algorithms')
 
     # generate validation curves
-    validation_curve(BP, oaName='BP', title='Backpropagation')
-    validation_curve(RHC, oaName='RHC', title='Randomized Hill Climbing')
-    validation_curve(SA, oaName='SA', title='Simulated Annealing')
-    validation_curve(GA, oaName='GA', title='Genetic Algorithms')
+    learning_curve(BP, oaName='BP', title='Backpropagation')
+    learning_curve(RHC, oaName='RHC', title='Randomized Hill Climbing')
+    learning_curve(SA, oaName='SA', title='Simulated Annealing')
+    learning_curve(GA, oaName='GA', title='Genetic Algorithms')
 
     # generate combined dataset
     datafiles = {'BP': BP, 'RHC': RHC, 'SA': SA, 'GA': GA}
