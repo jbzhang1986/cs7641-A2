@@ -4,7 +4,6 @@ experiments.
 
 """
 from helpers import get_abspath, save_dataset
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use('agg')
@@ -47,11 +46,50 @@ def combined_error(df, ef='Mean squared error'):
     algorithms.
 
     Args:
-        df (Pandas.DataFrame): Dataset.
+        df (Pandas.DataFrame): Combined results dataset.
         ef (str): Name of loss function.
 
     """
-    print('hello')
+    # get columns
+    iters = df['iteration']
+    bp_msetrain = df['bp_msetrain']
+    bp_msetest = df['bp_msetest']
+    rhc_msetrain = df['rhc_msetrain']
+    rhc_msetest = df['rhc_msetest']
+    sa_msetrain = df['sa_msetrain']
+    sa_msetest = df['sa_msetest']
+    ga_msetrain = df['ga_msetrain']
+    ga_msetest = df['ga_msetest']
+
+    # create error curve
+    plt.figure(0)
+    plt.plot(iters, bp_msetrain, marker='o',
+             markevery=20, color='b', label='BP - Train')
+    plt.plot(iters, bp_msetest, marker='o',
+             markevery=20, color='g', label='BP - Test')
+    plt.plot(iters, rhc_msetrain, marker='+',
+             markevery=20, color='r', label='RHC - Train')
+    plt.plot(iters, rhc_msetest, marker='+',
+             markevery=20, color='k', label='RHC - Test')
+    plt.plot(iters, sa_msetrain, marker='x',
+             markevery=20, color='b', label='SA - Train')
+    plt.plot(iters, sa_msetest, marker='x',
+             markevery=20, color='r', label='SA - Test')
+    plt.plot(iters, ga_msetrain, marker='',
+             markevery=20, color='b', label='GA - Train')
+    plt.plot(iters, ga_msetest, marker='x',
+             markevery=20, color='r', label='GA - Test')
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('Algorithm Comparison - {}'.format(ef))
+    plt.xlabel('Iterations')
+    plt.ylabel(ef)
+
+    # save learning curve plot as PNG
+    plotdir = 'plots/NN/combined'
+    plotpath = get_abspath('combined_error.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
 
 
 def combined_acc(df):
@@ -158,6 +196,10 @@ if __name__ == '__main__':
     validation_curve(SA, oaName='SA', title='Simulated Annealing')
     validation_curve(GA, oaName='GA', title='Genetic Algorithms')
 
-    # generate combined plots
+    # generate combined dataset
     datafiles = {'BP': BP, 'RHC': RHC, 'SA': SA, 'GA': GA}
     combine_datasets(datafiles)
+
+    # generated combined plots
+    combined = pd.read_csv(get_abspath('combined/combined.csv', resdir))
+    combined_error(combined)
