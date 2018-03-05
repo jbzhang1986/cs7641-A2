@@ -9,11 +9,12 @@ import matplotlib
 matplotlib.use('agg')
 import seaborn as sns
 import matplotlib.pyplot as plt
+sns.set_context(rc={'lines.markeredgewidth': 1.0})
 
 
 def combine_datasets(df):
-    """Creates combined datasets for error and accuracy to compare the various
-    optimization algorithms.
+    """Creates a combined dataset for error and accuracy to compare various
+    optimization algorithms and saves it as a CSV file.
 
     Args:
         dfs (dict(Pandas.DataFrame)): Dictionary of data frames.
@@ -42,8 +43,8 @@ def combine_datasets(df):
 
 
 def combined_error(df, ef='Mean squared error'):
-    """Generates plots for comparing error across the various optimization
-    algorithms.
+    """Generates plots for comparing error across the various
+    optimization algorithms and saves them as PNG files.""
 
     Args:
         df (Pandas.DataFrame): Combined results dataset.
@@ -61,49 +62,161 @@ def combined_error(df, ef='Mean squared error'):
     ga_msetrain = df['ga_msetrain']
     ga_msetest = df['ga_msetest']
 
-    # create error curve
+    # create error curve for train dataset
     plt.figure(0)
     plt.plot(iters, bp_msetrain, marker='o',
-             markevery=20, color='b', label='BP - Train')
-    plt.plot(iters, bp_msetest, marker='o',
-             markevery=20, color='g', label='BP - Test')
-    plt.plot(iters, rhc_msetrain, marker='+',
-             markevery=20, color='r', label='RHC - Train')
-    plt.plot(iters, rhc_msetest, marker='+',
-             markevery=20, color='k', label='RHC - Test')
-    plt.plot(iters, sa_msetrain, marker='x',
-             markevery=20, color='b', label='SA - Train')
-    plt.plot(iters, sa_msetest, marker='x',
-             markevery=20, color='r', label='SA - Test')
-    plt.plot(iters, ga_msetrain, marker='',
-             markevery=20, color='b', label='GA - Train')
-    plt.plot(iters, ga_msetest, marker='x',
-             markevery=20, color='r', label='GA - Test')
+             markevery=30, color='b', label='Backprop')
+    plt.plot(iters, rhc_msetrain, marker='s',
+             markevery=30, color='r', label='RHC')
+    plt.plot(iters, sa_msetrain, marker='^',
+             markevery=30, color='g', label='SA')
+    plt.plot(iters, ga_msetrain, marker='v',
+             markevery=30, color='k', label='GA')
+    plt.xlim(xmin=-30)
+    plt.ylim(ymin=-0.025)
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
-    plt.title('Algorithm Comparison - {}'.format(ef))
+    plt.title('Algorithm Comparison (training data) - {}'.format(ef))
     plt.xlabel('Iterations')
     plt.ylabel(ef)
 
     # save learning curve plot as PNG
     plotdir = 'plots/NN/combined'
-    plotpath = get_abspath('combined_error.png', plotdir)
+    plotpath = get_abspath('error_train.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+    # create error curve for train dataset
+    plt.plot(iters, bp_msetest, marker='o',
+             markevery=30, color='b', label='Backprop')
+    plt.plot(iters, rhc_msetest, marker='s',
+             markevery=30, color='r', label='RHC')
+    plt.plot(iters, sa_msetest, marker='^',
+             markevery=30, color='g', label='SA')
+    plt.plot(iters, ga_msetest, marker='v',
+             markevery=30, color='k', label='GA')
+    plt.xlim(xmin=-30)
+    plt.ylim(ymin=-0.025)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('Algorithm Comparison (test data) - {}'.format(ef))
+    plt.xlabel('Iterations')
+    plt.ylabel(ef)
+
+    # save learning curve plot as PNG
+    plotdir = 'plots/NN/combined'
+    plotpath = get_abspath('error_test.png', plotdir)
     plt.savefig(plotpath, bbox_inches='tight')
     plt.clf()
 
 
 def combined_acc(df):
     """Generates plots for comparing accuracy scores across the various
-    optimization algorithms.
+    optimization algorithms and saves them as PNG files.
 
     Args:
-        df (Pandas.DataFrame): Dataset.
+        df (Pandas.DataFrame): Combined results dataset.
 
     """
-    print('hello')
+    # get columns
+    iters = df['iteration']
+    bp_acctrain = df['bp_acctrain']
+    bp_acctest = df['bp_acctest']
+    rhc_acctrain = df['rhc_acctrain']
+    rhc_acctest = df['rhc_acctest']
+    sa_acctrain = df['sa_acctrain']
+    sa_acctest = df['sa_acctest']
+    ga_acctrain = df['ga_acctrain']
+    ga_acctest = df['ga_acctest']
+
+    # create learning curve for train dataset
+    plt.figure(0)
+    plt.plot(iters, bp_acctrain, marker='o',
+             markevery=30, color='b', label='Backprop')
+    plt.plot(iters, rhc_acctrain, marker='s',
+             markevery=30, color='r', label='RHC')
+    plt.plot(iters, sa_acctrain, marker='^',
+             markevery=30, color='g', label='SA')
+    plt.plot(iters, ga_acctrain, marker='v',
+             markevery=30, color='k', label='GA')
+    plt.xlim(xmin=-30)
+    plt.ylim(ymax=1.025)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('Algorithm Comparison (training data) - Accuracy')
+    plt.xlabel('Iterations')
+    plt.ylabel('Accuracy')
+
+    # save learning curve plot as PNG
+    plotdir = 'plots/NN/combined'
+    plotpath = get_abspath('acc_train.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+    # create learning curve for train dataset
+    plt.plot(iters, bp_acctest, marker='o',
+             markevery=30, color='b', label='Backprop')
+    plt.plot(iters, rhc_acctest, marker='s',
+             markevery=30, color='r', label='RHC')
+    plt.plot(iters, sa_acctest, marker='^',
+             markevery=30, color='g', label='SA')
+    plt.plot(iters, ga_acctest, marker='v',
+             markevery=30, color='k', label='GA')
+    plt.xlim(xmin=-30)
+    plt.ylim(ymax=1.025)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('Algorithm Comparison (test data) - Accuracy')
+    plt.xlabel('Iterations')
+    plt.ylabel('Accuracy')
+
+    # save learning curve plot as PNG
+    plotdir = 'plots/NN/combined'
+    plotpath = get_abspath('acc_test.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
 
 
-def error_curve(df, oaName, title, ef='Mean squared error'):
+def combined_timing(df):
+    """Generates a plot for comparing elapsed time across the various
+    optimization algorithms and saves it as a PNG file.
+
+    Args:
+        df (Pandas.DataFrame): Combined results dataset.
+
+    """
+    # get columns
+    iters = df['iteration']
+    bp_time = df['bp_time'] / 60
+    rhc_time = df['rhc_time'] / 60
+    sa_time = df['sa_time'] / 60
+    ga_time = df['ga_time'] / 60
+
+    # create timing curve for train dataset
+    plt.figure(0)
+    plt.plot(iters, bp_time, marker='o',
+             markevery=30, color='b', label='Backprop')
+    plt.plot(iters, rhc_time, marker='s',
+             markevery=30, color='r', label='RHC')
+    plt.plot(iters, sa_time, marker='^',
+             markevery=30, color='g', label='SA')
+    plt.plot(iters, ga_time, marker='v',
+             markevery=30, color='k', label='GA')
+    plt.xlim(xmin=-30)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('Algorithm Comparison - Elapsed Time')
+    plt.xlabel('Iterations')
+    plt.ylabel('Time (minutes)')
+
+    # save timing curve plot as PNG
+    plotdir = 'plots/NN/combined'
+    plotpath = get_abspath('elapsed_time.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+
+def error_curve(df, oaName, title):
     """Plots the error curve for a given optimization algorithm on the
     seismic-bumps dataset and saves it as a PNG file.
 
@@ -128,9 +241,9 @@ def error_curve(df, oaName, title, ef='Mean squared error'):
     plt.plot(iterations, MSE_valid, color='g', label='Validation')
     plt.legend(loc='best')
     plt.grid(linestyle='dotted')
-    plt.title('{} - {}'.format(title, ef))
+    plt.title('{} - Mean squared error'.format(title))
     plt.xlabel('Iterations')
-    plt.ylabel(ef)
+    plt.ylabel('Mean squared error')
 
     # save learning curve plot as PNG
     plotdir = 'plots/NN'
@@ -176,6 +289,82 @@ def validation_curve(df, oaName, title):
     plt.clf()
 
 
+def sa_complexity_curve():
+    """Plots the cooling rate complexity curve for the simulated annealing
+    algorithm and saves it as a PNG file.
+
+    Args:
+        df (Pandas.DataFrame): Dataset.
+        oaName (str): Name of optimization algorithm.
+        title (str): Plot title.
+
+    """
+    # load datasets
+    resdir = 'results/NN/SA'
+    df_15 = pd.read_csv(get_abspath('results_10000000000.0_0.15.csv', resdir))
+    df_30 = pd.read_csv(get_abspath('results_10000000000.0_0.3.csv', resdir))
+    df_45 = pd.read_csv(get_abspath('results_10000000000.0_0.45.csv', resdir))
+    df_60 = pd.read_csv(get_abspath('results_10000000000.0_0.6.csv', resdir))
+    df_75 = pd.read_csv(get_abspath('results_10000000000.0_0.75.csv', resdir))
+    df_90 = pd.read_csv(get_abspath('results_10000000000.0_0.9.csv', resdir))
+
+
+    # get columns
+    iters = df_15['iteration']
+    train_15 = df_15['MSE_train']
+    test_15 = df_15['MSE_test']
+    train_30 = df_30['MSE_train']
+    test_30 = df_30['MSE_test']
+    train_45 = df_45['MSE_train']
+    test_45 = df_45['MSE_test']
+    train_60 = df_60['MSE_train']
+    test_60 = df_60['MSE_test']
+    train_75 = df_75['MSE_train']
+    test_75 = df_75['MSE_test']
+    train_90 = df_90['MSE_train']
+    test_90 = df_90['MSE_test']
+
+    # create complexity curve for training data
+    plt.figure(0)
+    plt.plot(iters, train_15, color='b', label='CR - 0.15')
+    plt.plot(iters, train_30, color='g', label='CR - 0.30')
+    plt.plot(iters, train_45, color='r', label='CR - 0.45')
+    plt.plot(iters, train_60, color='c', label='CR - 0.60')
+    plt.plot(iters, train_75, color='k', label='CR - 0.75')
+    plt.plot(iters, train_90, color='m', label='CR - 0.90')
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('SA (training data) - Complexity Curve (Cooling rate)')
+    plt.xlabel('Iterations')
+    plt.ylabel('Mean squared error')
+
+    # save complexity curve plot as PNG
+    plotdir = 'plots/NN/SA'
+    plotpath = get_abspath('SA_CR_train.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+    # create complexity curve for test data
+    plt.figure(0)
+    plt.plot(iters, test_15, color='b', label='CR - 0.15')
+    plt.plot(iters, test_30, color='g', label='CR - 0.30')
+    plt.plot(iters, test_45, color='r', label='CR - 0.45')
+    plt.plot(iters, test_60, color='c', label='CR - 0.60')
+    plt.plot(iters, test_75, color='k', label='CR - 0.75')
+    plt.plot(iters, test_90, color='m', label='CR - 0.90')
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('SA (test data) - Complexity Curve (Cooling rate)')
+    plt.xlabel('Iterations')
+    plt.ylabel('Mean squared error')
+
+    # save learning curve plot as PNG
+    plotdir = 'plots/NN/SA'
+    plotpath = get_abspath('SA_CR_test.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+
 if __name__ == '__main__':
     # get datasets for error and accuracy curves
     resdir = 'results/NN'
@@ -203,3 +392,6 @@ if __name__ == '__main__':
     # generated combined plots
     combined = pd.read_csv(get_abspath('combined/combined.csv', resdir))
     combined_error(combined)
+    combined_acc(combined)
+    combined_timing(combined)
+    sa_complexity_curve()
