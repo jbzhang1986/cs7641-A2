@@ -425,12 +425,69 @@ def ga_population_curve():
     plt.clf()
 
 
+def ga_mating_curve():
+    """Plots the mating rate validation curve for genetic algorithms and
+    saves it as a PNG file.
+
+    """
+    # load datasets
+    resdir = 'results/NN/GA'
+    df_10= pd.read_csv(get_abspath('results_50_10_10.csv', resdir))
+    df_20 = pd.read_csv(get_abspath('results_50_20_10.csv', resdir))
+    df_30 = pd.read_csv(get_abspath('results_50_30_10.csv', resdir))
+
+    # get columns
+    iters = df_10['iteration']
+    train_10 = df_10['MSE_train']
+    test_10 = df_10['MSE_test']
+    train_20 = df_20['MSE_train']
+    test_20 = df_20['MSE_test']
+    train_30 = df_30['MSE_train']
+    test_30 = df_30['MSE_test']
+
+    # create validation curve for training data
+    plt.figure(0)
+    plt.plot(iters, train_10, color='b', label='# of mates: 10')
+    plt.plot(iters, train_20, color='g', label='# of mates: 20')
+    plt.plot(iters, train_30, color='r', label='# of mates: 30')
+    plt.xlim(xmin=-30)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('GA Validation Curve - Mating Rate (train)')
+    plt.xlabel('Iterations')
+    plt.ylabel('Mean squared error')
+
+    # save complexity curve plot as PNG
+    plotdir = 'plots/NN/GA'
+    plotpath = get_abspath('GA_MA_train.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+    # create complexity curve for test data
+    plt.figure(0)
+    plt.plot(iters, test_10, color='b', label='# of mates: 10')
+    plt.plot(iters, test_20, color='g', label='# of mates: 20')
+    plt.plot(iters, test_30, color='r', label='# of mates: 30')
+    plt.xlim(xmin=-30)
+    plt.legend(loc='best')
+    plt.grid(linestyle='dotted')
+    plt.title('GA Validation Curve - Mating Rate (test)')
+    plt.xlabel('Iterations')
+    plt.ylabel('Mean squared error')
+
+    # save learning curve plot as PNG
+    plotdir = 'plots/NN/GA'
+    plotpath = get_abspath('GA_MA_test.png', plotdir)
+    plt.savefig(plotpath, bbox_inches='tight')
+    plt.clf()
+
+
 if __name__ == '__main__':
     # get datasets for error and accuracy curves
     resdir = 'results/NN'
     BP = pd.read_csv(get_abspath('BP/results.csv', resdir))
     RHC = pd.read_csv(get_abspath('RHC/results.csv', resdir))
-    SA = pd.read_csv(get_abspath('SA/results_10000000000.0_0.15.csv', resdir))
+    SA = pd.read_csv(get_abspath('SA/results_10000000000.0_0.3.csv', resdir))
     GA = pd.read_csv(get_abspath('GA/results_100_10_10.csv', resdir))
 
     # generate error curves
@@ -448,6 +505,7 @@ if __name__ == '__main__':
     # generate validation curves
     sa_validation_curve()
     ga_population_curve()
+    ga_mating_curve()
 
     # generate combined dataset
     datafiles = {'BP': BP, 'RHC': RHC, 'SA': SA, 'GA': GA}
